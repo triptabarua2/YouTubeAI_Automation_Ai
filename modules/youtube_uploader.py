@@ -80,16 +80,17 @@ def upload_video(video_path, thumbnail_path, script_data,
                 continue
             lang_name = LANG_NAMES.get(lang_code, lang_code)
             try:
-                req = youtube.videoAudioTracks().insert(
-                    part="snippet", videoId=video_id,
-                    body={"snippet": {"language": lang_code, "displayName": lang_name,
-                                      "isDefault": (lang_code == language)}},
-                    media_body=MediaFileUpload(track_path, resumable=True, mimetype="audio/mpeg")
-                )
-                resp = None
-                while resp is None:
-                    st, resp = req.next_chunk()
-                print(f"  ✅ {lang_name} track যোগ হয়েছে!")
+                # req = youtube.videoAudioTracks().insert(
+                #     part="snippet", videoId=video_id,
+                #     body={"snippet": {"language": lang_code, "displayName": lang_name,
+                #                       "isDefault": (lang_code == language)}},
+                #     media_body=MediaFileUpload(track_path, resumable=True, mimetype="audio/mpeg")
+                # )
+                # resp = None
+                # while resp is None:
+                #     st, resp = req.next_chunk()
+                # print(f"  ✅ {lang_name} track যোগ হয়েছে!")
+                print(f"  ⚠️ {lang_name} track upload skipped (API not publicly available)")
                 time.sleep(2)
             except Exception as e:
                 print(f"  ⚠️ {lang_name} track error: {e}")

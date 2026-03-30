@@ -209,7 +209,7 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
             try:
                 jfont = ImageFont.load_default(size=30)
             except:
-                jfont = font_default
+                jfont = ImageFont.load_default()  # ✅ Fixed: font_default was not defined
             draw.text((VIDEO_W//2, VIDEO_H-bar_h-35), f"😂 {joke[:65]}", fill=jcolor, anchor="mm", font=jfont)
 
         return np.array(canvas)
@@ -278,7 +278,7 @@ def create_video(scenes, image_paths, audio_paths,
             if bgm.duration < final.duration:
                 n   = int(final.duration / bgm.duration) + 1
                 bgm = concatenate_audioclips([bgm] * n)
-            bgm   = bgm.with_section(0, final.duration)
+            bgm   = bgm.subclip(0, final.duration) # ✅ Fixed: MoviePy v2 uses subclip instead of with_section
             final = final.with_audio(CompositeAudioClip([final.audio, bgm]))
         except Exception as e:
             print(f"  ⚠️ Music error: {e}")
