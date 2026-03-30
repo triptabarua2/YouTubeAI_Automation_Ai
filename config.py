@@ -20,7 +20,7 @@ ELEVENLABS_VOICE_ID    = ELEVENLABS_VOICE_ID_HI  # Set Hindi as default since BN
 GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
 
 # ✅ Pixabay — background music (ফ্রি)
-PIXABAY_API_KEY = "YOUR_PIXABAY_API_KEY"
+PIXABAY_API_KEY = "55236479-11b9f99ab068447d994840980"
 
 # ✅ YouTube client secret — ৩টা channel-এর জন্য আলাদা file
 # console.cloud.google.com থেকে প্রতিটা channel-এর OAuth credentials ডাউনলোড করুন
