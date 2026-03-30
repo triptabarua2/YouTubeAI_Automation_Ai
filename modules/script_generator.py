@@ -1,10 +1,12 @@
 # modules/script_generator.py
-# Google Gemini API দিয়ে FUNNY script তৈরি করে
+# Google Gemini API দিয়ে YouTube Trending Topic ভিত্তিক FUNNY script তৈরি করে
 
 import google.generativeai as genai
 import json
 import sys
 import os
+import datetime
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import GOOGLE_API_KEY, SCENES_PER_VIDEO
 
@@ -16,7 +18,7 @@ def generate_script(topic: str) -> dict:
 
     prompt = f"""You are a FUNNY Bengali YouTube animator — think cartoon show meets comedy roast.
 
-Create a HILARIOUS animated video script for: "{topic}"
+Create a HILARIOUS animated video script for the trending topic: "{topic}"
 
 Rules for FUNNY content:
 - Use Bengali slang and everyday expressions (ভাই, আরে বাবা, কী আজব, মাথা নষ্ট etc.)
@@ -58,21 +60,43 @@ Make exactly {SCENES_PER_VIDEO} scenes. Keep it SHORT, PUNCHY, and FUNNY.
     elif "```" in response_text:
         response_text = response_text.split("```")[1].split("```")[0].strip()
 
-    script_data = json.loads(response_text)
-    print(f"✅ Funny Script তৈরি: {len(script_data['scenes'])} scenes")
-    return script_data
+    try:
+        script_data = json.loads(response_text)
+        print(f"✅ Funny Script তৈরি: {len(script_data['scenes'])} scenes")
+        return script_data
+    except Exception as e:
+        print(f"❌ JSON Parsing Error: {e}")
+        # Fallback to a very simple structure if AI fails
+        return {"title": topic, "scenes": []}
 
 
 def get_trending_topic() -> str:
+    """
+    Gemini-কে বর্তমান তারিখ এবং প্রেক্ষাপট দিয়ে YouTube Trending Topic খুঁজে বের করতে বলা হয়।
+    """
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    current_date = datetime.date.today().strftime("%B %d, %2026")
+    
+    # Prompting Gemini to act as a trend researcher
+    prompt = f"""Today is {current_date}. 
+Identify ONE currently viral or trending topic in Bangladesh that would be perfect for a FUNNY 2D animation video.
+Focus on:
+1. Recent viral social media incidents in Bangladesh.
+2. Trending memes or funny news.
+3. Relatable seasonal topics (e.g., extreme heat, rain, exams, Eid preparation).
+4. Anything people are talking about on YouTube/Facebook in Bangladesh right now.
 
-    response = model.generate_content(
-        """Suggest ONE funny YouTube video topic for a Bengali comedy animation channel.
-Relatable to Bangladeshi life, comedic everyday situations.
-Example: "বাংলাদেশি মায়েরা যখন বলেন 'একটু পরে খাবো' 😂"
-Return ONLY the topic in Bengali with emoji, nothing else."""
-    )
-    topic = response.text.strip()
-    print(f"💡 Auto funny topic: {topic}")
-    return topic
+Return ONLY the topic in Bengali with a funny emoji. 
+Example: "বিদ্যুৎ বিল দেখে মধ্যবিত্তের হার্ট অ্যাটাক 😂" or "মেট্রোরেলে মানুষের আজব কাণ্ডকারখানা 🚆"
+"""
+
+    try:
+        response = model.generate_content(prompt)
+        topic = response.text.strip()
+        print(f"💡 YouTube Trending Topic: {topic}")
+        return topic
+    except Exception as e:
+        print(f"⚠️ Trending topic fetch error: {e}")
+        return "বাংলাদেশি মধ্যবিত্তের দৈনন্দিন সংগ্রাম 😂" # Fallback
