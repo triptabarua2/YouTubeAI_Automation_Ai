@@ -1,10 +1,10 @@
-# 🎬 YouTube AI Full Automation — সেটআপ গাইড
+# 🎬 YouTube AI Full Automation — সেটআপ গাইড (আপডেটেড)
 
 ## এই system কী করবে?
 ```
-আপনি কিছু না করলেও প্রতিদিন:
+আপনি কিছু না করলেও প্রতিদিন ৩টি আলাদা চ্যানেলে:
 Topic বাছাই → Script লেখা → AI Image বানানো → 
-Multi-language Voiceover দেওয়া → Video Edit → YouTube Upload (Multi-audio tracks সহ)
+Multi-language Voiceover দেওয়া → Video Edit → YouTube Upload (অটোমেটিক শিডিউল)
 ```
 
 ---
@@ -26,74 +26,58 @@ pip install -r requirements.txt
 ### A) Google API Key (Gemini — Script লেখার জন্য)
 1.  https://aistudio.google.com/app/apikey যান
 2.  একটি নতুন API Key তৈরি করুন এবং কপি করুন।
-3.  `config.py` তে `GOOGLE_API_KEY = "..."` এখানে বসান।
+3.  `config.py` তে `GOOGLE_API_KEY = "..."` এখানে বসান। (ভবিষ্যতে `.env` ফাইল ব্যবহার করার পরামর্শ দেওয়া হচ্ছে)
 
 ### B) ElevenLabs API Key (Voiceover — বাংলা, English, হিন্দি voice)
 1.  https://elevenlabs.io যান
-2.  Free Sign Up করুন।
-3.  Profile → API Key → Copy করুন।
-4.  Voices → Voice Library থেকে আপনার পছন্দের বাংলা, English এবং হিন্দি ভয়েস বেছে নিন এবং তাদের Voice ID কপি করুন।
-5.  `config.py` তে `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID_BN`, `ELEVENLABS_VOICE_ID_EN`, `ELEVENLABS_VOICE_ID_HI` এখানে বসান।
-    *   যদি ElevenLabs API Key না থাকে বা ব্যবহার করতে না চান, তাহলে gTTS (Google Text-to-Speech) স্বয়ংক্রিয়ভাবে ফলব্যাক হিসেবে কাজ করবে।
+2.  Free Sign Up করুন এবং API Key কপি করুন।
+3.  Voices → Voice Library থেকে আপনার পছন্দের ভয়েস বেছে নিন এবং তাদের Voice ID কপি করুন।
+4.  `config.py` তে `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID_BN`, `ELEVENLABS_VOICE_ID_EN`, `ELEVENLABS_VOICE_ID_HI` এখানে বসান।
 
 ### C) YouTube API (Upload করার জন্য)
-1.  https://console.cloud.google.com যান
-2.  একটি নতুন Project বানান: "YouTubeAI"
-3.  APIs & Services → Enable → "YouTube Data API v3" সার্চ করে Enable করুন।
-4.  Credentials → OAuth 2.0 Client ID → Desktop App সিলেক্ট করুন।
-5.  JSON ফাইলটি ডাউনলোড করুন এবং `client_secret.json` নামে এই প্রজেক্ট ফোল্ডারে রাখুন।
+1.  https://console.cloud.google.com যান এবং ৩টি চ্যানেলের জন্য আলাদা OAuth 2.0 Client ID তৈরি করুন।
+2.  JSON ফাইলগুলো ডাউনলোড করে এই নামে সেভ করুন:
+    - `client_secret_channel1.json`
+    - `client_secret_channel2.json`
+    - `client_secret_channel3.json`
 
 ---
 
-## ধাপ ৪ — Music যোগ করুন (Optional)
-`music/` folder-এ যেকোনো royalty-free .mp3 ফাইল রাখুন।
-ফ্রি music পাবেন: https://pixabay.com/music
+## ধাপ ৪ — ৩টি চ্যানেলের সেটিংস (config.py)
+আপনার ৩টি আলাদা চ্যানেলের জন্য `config.py` ফাইলে নিচের সেটিংসগুলো চেক করে নিন:
+- **Channel 1:** Funny (সকাল ৯টা)
+- **Channel 2:** Educational (দুপুর ১টা)
+- **Channel 3:** Storytelling (রাত ৮টা)
 
 ---
 
 ## ধাপ ৫ — Run করুন!
 
-### একটি video বানানো (topic নিজে দিয়ে):
+### নির্দিষ্ট একটি চ্যানেল চালানো:
 ```bash
-python main.py --topic "বাংলাদেশের সেরা ১০টি রহস্য"
+python main.py --channel channel_1 --auto-upload
 ```
 
-### AI নিজে topic বাছুক:
+### ৩টি চ্যানেল একসাথে চালানো (একটার পর একটা):
 ```bash
-python main.py
+python main.py --all --auto-upload
 ```
 
-### Video বানিয়ে সাথে সাথে upload করা:
-```bash
-python main.py --auto-upload
-```
-
-### প্রতিদিন automatic (schedule mode):
+### প্রতিদিন অটোমেটিক (Schedule Mode):
 ```bash
 python main.py --schedule
 ```
-> এটা চালিয়ে রাখলে `config.py` তে দেওয়া সময়ে প্রতিদিন video বানিয়ে upload করবে!
-
-### পুরনো video-র list দেখতে:
-```bash
-python main.py --logs
-```
+> এটা চালিয়ে রাখলে `config.py` তে দেওয়া সময়ে প্রতিদিন ৩টি চ্যানেলে ভিডিও আপলোড হবে!
 
 ---
 
-## কতটুকু ফ্রি, কতটুকু টাকা লাগবে?
-
-| Service | ফ্রি কোটা | মাসে খরচ |
-|---------|-----------|----------|
-| Google Gemini | প্রতি মাসে 60 অনুরোধ/মিনিট ফ্রি | সাধারণত ফ্রিতেই চলবে |
-| ElevenLabs | 10,000 chars/মাস ফ্রি | ফ্রিতেই চলবে (বেসিক ব্যবহারের জন্য) |
-| Pollinations.ai (Image) | সম্পূর্ণ ফ্রি ✅ | ৳0 |
-| YouTube API | সম্পূর্ণ ফ্রি ✅ | ৳0 |
+## নিরাপত্তা ও সতর্কতা (Security Warning)
+- আপনার `config.py` ফাইলে সরাসরি API Key দেওয়া আছে। এগুলো কখনোই পাবলিকলি শেয়ার করবেন না।
+- `.gitignore` ফাইলে আপনার সিক্রেট ফাইলগুলো (`client_secret*.json`, `token*.pickle`) অলরেডি অ্যাড করা আছে, তাই এগুলো গিথাবে আপলোড হবে না।
 
 ---
 
 ## সমস্যা হলে
--   `video_log.json` দেখুন — কী হয়েছে record আছে
--   `output/script.json` দেখুন — script ঠিক হয়েছে কিনা
--   API key ভুল থাকলে error message আসবে
--   `modules/script_generator.py` এ `current_date` ফরম্যাটিং বাগটি ঠিক করে নিন: `"%2026"` এর পরিবর্তে `"%Y"` ব্যবহার করুন।
+- `video_log.json` দেখুন — ভিডিও তৈরির হিস্ট্রি এবং এরর এখানে পাবেন।
+- `output/` ফোল্ডারে প্রতিটি চ্যানেলের আলাদা আউটপুট ভিডিও এবং স্ক্রিপ্ট সেভ হবে।
+- যদি ভিডিও এডিটরে কোনো সমস্যা হয়, তবে `modules/video_editor.py`-তে ফন্ট সেটিংস চেক করুন।
