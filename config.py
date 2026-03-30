@@ -1,65 +1,78 @@
 # ============================================================
-#  config.py — এখানে আপনার সব API Key বসান
+#  config.py — সব API Key এবং ৩টি Channel Settings
 # ============================================================
 
-# ✅ Telegram Bot — মোবাইলে notification পাওয়ার জন্য (সম্পূর্ণ ফ্রি)
-# Bot বানাতে: Telegram-এ @BotFather খুঁজুন → /newbot → token copy করুন
+# ✅ Telegram Bot — মোবাইলে notification (ফ্রি)
 TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-# Chat ID পেতে: @userinfobot-এ /start দিন → আপনার ID copy করুন
 TELEGRAM_CHAT_ID   = "YOUR_TELEGRAM_CHAT_ID"
 
-# ✅ Google Gemini (Free) — script লেখার জন্য
-# পাবেন: https://aistudio.google.com/app/apikey
+# ✅ Google Gemini — script লেখার জন্য (ফ্রি)
 GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"
 
-# ✅ ElevenLabs — ৩ ভাষায় voiceover (MrBeast style)
-# পাবেন: https://elevenlabs.io (ফ্রি signup)
-# ElevenLabs dashboard → Voices → Voice ID copy করুন
-ELEVENLABS_API_KEY      = "YOUR_ELEVENLABS_API_KEY"
-ELEVENLABS_VOICE_ID_BN  = "YOUR_BENGALI_VOICE_ID"   # বাংলা voice
-ELEVENLABS_VOICE_ID_EN  = "YOUR_ENGLISH_VOICE_ID"   # English voice
-ELEVENLABS_VOICE_ID_HI  = "YOUR_HINDI_VOICE_ID"     # हिंदी voice
+# ✅ ElevenLabs — voiceover (মাসে ১০,০০০ chars ফ্রি)
+ELEVENLABS_API_KEY     = "YOUR_ELEVENLABS_API_KEY"
+ELEVENLABS_VOICE_ID_BN = "YOUR_BENGALI_VOICE_ID"
+ELEVENLABS_VOICE_ID_EN = "YOUR_ENGLISH_VOICE_ID"
+ELEVENLABS_VOICE_ID_HI = "YOUR_HINDI_VOICE_ID"
+ELEVENLABS_VOICE_ID    = ELEVENLABS_VOICE_ID_BN  # backward compat
 
-# Backward compatibility
-ELEVENLABS_VOICE_ID = ELEVENLABS_VOICE_ID_BN
-
-# ✅ Google Cloud TTS — ElevenLabs limit শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি)
-# পাবেন: console.cloud.google.com → APIs → Text-to-Speech API enable করুন
-# তারপর: APIs & Services → Credentials → API Key
+# ✅ Google Cloud TTS — ElevenLabs শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি)
 GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
 
-# ✅ Google Cloud TTS — ElevenLabs শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি!)
-# পাবেন: console.cloud.google.com → APIs → "Cloud Text-to-Speech API" enable করুন
-# তারপর: APIs & Services → Credentials → API Key → copy করুন
-GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
-
-# ✅ Pixabay — automatic background music ডাউনলোড (সম্পূর্ণ ফ্রি)
-# পাবেন: https://pixabay.com/api/docs/ → "Get API Key" (ফ্রি signup)
+# ✅ Pixabay — background music (ফ্রি)
 PIXABAY_API_KEY = "YOUR_PIXABAY_API_KEY"
 
-# ✅ YouTube — upload এর জন্য
-# পাবেন: https://console.cloud.google.com
-# (নিচে SETUP_GUIDE.md তে বিস্তারিত আছে)
-YOUTUBE_CLIENT_SECRET_FILE = "client_secret.json"
+# ✅ YouTube client secret — ৩টা channel-এর জন্য আলাদা file
+# console.cloud.google.com থেকে প্রতিটা channel-এর OAuth credentials ডাউনলোড করুন
+# ============================================================
 
 # ============================================================
-#  Channel Settings
+#  ৩টি Channel-এর Settings
 # ============================================================
-CHANNEL_LANGUAGE = "bn"          # বাংলা (default audio track)
-CHANNEL_TOPIC = "2D animation educational and storytelling videos in Bengali"
-CHANNEL_STYLE = "engaging, fun, educational, suitable for Bangladeshi audience"
-VIDEO_CATEGORY_ID = "27"         # Education
+CHANNELS = {
+
+    "channel_1": {
+        "name":              "আমার বাংলা চ্যানেল ১",          # channel-এর নাম
+        "topic":             "funny",                          # channel-এর বিষয়
+        "topic_description": "বাংলাদেশের মজার ও হাসির ঘটনা, viral memes, comedy animation",
+        "style":             "funny, relatable, Bangladeshi humor",
+        "upload_time":       "09:00",                         # সকাল ৯টায়
+        "client_secret":     "client_secret_channel1.json",   # YouTube OAuth file
+        "token_file":        "token_channel1.pickle",
+        "category_id":       "23",                            # 23 = Comedy
+        "language":          "bn",
+    },
+
+    "channel_2": {
+        "name":              "আমার বাংলা চ্যানেল ২",
+        "topic":             "educational",
+        "topic_description": "বাংলাদেশ ও বিশ্বের অজানা তথ্য, ইতিহাস, বিজ্ঞান, শিক্ষামূলক animation",
+        "style":             "educational, informative, engaging, suitable for all ages",
+        "upload_time":       "13:00",                         # দুপুর ১টায়
+        "client_secret":     "client_secret_channel2.json",
+        "token_file":        "token_channel2.pickle",
+        "category_id":       "27",                            # 27 = Education
+        "language":          "bn",
+    },
+
+    "channel_3": {
+        "name":              "আমার বাংলা চ্যানেল ৩",
+        "topic":             "storytelling",
+        "topic_description": "বাংলাদেশের রহস্য, ভূতের গল্প, রোমাঞ্চকর কাহিনী, mystery animation",
+        "style":             "mysterious, thrilling, dramatic, suspenseful",
+        "upload_time":       "20:00",                         # রাত ৮টায়
+        "client_secret":     "client_secret_channel3.json",
+        "token_file":        "token_channel3.pickle",
+        "category_id":       "24",                            # 24 = Entertainment
+        "language":          "bn",
+    },
+
+}
 
 # ============================================================
-#  Video Settings
+#  Global Video Settings (সব channel-এ একই)
 # ============================================================
-VIDEO_DURATION_SECONDS = 180     # ~৩ মিনিটের ভিডিও
-SCENES_PER_VIDEO = 8             # কতটি scene থাকবে
-FPS = 24
-RESOLUTION = (1920, 1080)        # Full HD
-
-# ============================================================
-#  Schedule — কখন ভিডিও upload হবে
-# ============================================================
-UPLOAD_TIME = "10:00"            # সকাল ১০টায়
-UPLOAD_DAYS = ["monday", "wednesday", "friday"]  # সপ্তাহে ৩ দিন
+SCENES_PER_VIDEO       = 8
+FPS                    = 24
+RESOLUTION             = (1920, 1080)
+VIDEO_DURATION_SECONDS = 180

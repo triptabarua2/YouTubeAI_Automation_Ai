@@ -21,7 +21,7 @@ from moviepy import (
     concatenate_videoclips, CompositeVideoClip
 )
 
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "output"  # default
 ASSETS_DIR = "assets"
 CHAR_CACHE = os.path.join(ASSETS_DIR, "character_transparent.png")
 VIDEO_W, VIDEO_H = 1920, 1080
@@ -221,13 +221,15 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
 
 # ── 5. Main ───────────────────────────────────────────────────
 
-def create_video(scenes: list, image_paths: list, audio_paths: list,
-                 output_filename: str, music_path: str = None) -> str:
+def create_video(scenes, image_paths, audio_paths,
+                 output_filename, music_path=None, output_dir=None, topic="funny"):
 
+    out = output_dir or OUTPUT_DIR
     print("\n🎬 Multi-language Funny Video তৈরি হচ্ছে...")
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(out, exist_ok=True)
 
-    char_img = get_character_image()
+    # Only show character for 'funny' topic
+    char_img = get_character_image() if topic == "funny" else None
     effects  = ["in", "out", "pan_right", "pan_left"]
     sides    = ["right", "left"]
     clips    = []
@@ -281,8 +283,8 @@ def create_video(scenes: list, image_paths: list, audio_paths: list,
         except Exception as e:
             print(f"  ⚠️ Music error: {e}")
 
-    out = os.path.join(OUTPUT_DIR, output_filename)
+    out_path = os.path.join(out, output_filename)
     print("  💾 Export হচ্ছে...")
-    final.write_videofile(out, fps=24, codec="libx264", audio_codec="aac", logger=None)
-    print(f"  ✅ Done: {out}")
-    return out
+    final.write_videofile(out_path, fps=24, codec="libx264", audio_codec="aac", logger=None)
+    print(f"  ✅ Done: {out_path}")
+    return out_path
