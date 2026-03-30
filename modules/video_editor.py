@@ -1,5 +1,5 @@
 # modules/video_editor.py
-# FUNNY Animation Video — emotion-based character animations
+# FUNNY Animation Video — emotion-based character animations with multi-language subtitles
 #
 # Emotions:
 #   shocked       → jump up + shake
@@ -170,41 +170,57 @@ def make_character_clip(char_img: Image.Image, duration: float,
     return rgb.with_mask(mask).with_fps(24)
 
 
-# ── 4. Funny Subtitle ─────────────────────────────────────────
+# ── 4. Multi-language Subtitle ─────────────────────────────────────────
 
-def make_subtitle_clip(narration: str, joke: str, duration: float) -> VideoClip:
-    bar_h = 115
+def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
+    bar_h = 160  # Increased height for 3 languages
 
     def make_frame(t):
         canvas = Image.new("RGBA", (VIDEO_W, VIDEO_H), (0,0,0,0))
         draw   = ImageDraw.Draw(canvas)
 
+        # Background bar
         for y in range(bar_h):
-            alpha = int(195 * (1 - y/bar_h*0.4))
+            alpha = int(205 * (1 - y/bar_h*0.4))
             draw.line([(0, VIDEO_H-bar_h+y), (VIDEO_W, VIDEO_H-bar_h+y)],
-                      fill=(10, 10, 40, alpha))
+                      fill=(5, 5, 25, alpha))
 
-        text = narration[:70] + "..." if len(narration) > 70 else narration
+        # Languages
+        langs = [
+            ("bn", scene.get("narration", ""), 32),
+            ("hi", scene.get("translation_hindi", ""), 28),
+            ("en", scene.get("translation_english", ""), 26)
+        ]
+
         try:
-            font = ImageFont.load_default(size=33)
-        except TypeError:
-            font = ImageFont.load_default()
+            font_default = ImageFont.load_default()
+        except:
+            font_default = None
 
-        draw.text((VIDEO_W//2+2, VIDEO_H-bar_h//2+2), text,
-                  fill=(0,0,0,200), anchor="mm", font=font)
-        draw.text((VIDEO_W//2, VIDEO_H-bar_h//2), text,
-                  fill=(255,255,255,255), anchor="mm", font=font)
+        y_offset = VIDEO_H - bar_h + 30
+        for code, text, size in langs:
+            display_text = text[:85] + "..." if len(text) > 85 else text
+            try:
+                font = ImageFont.load_default(size=size)
+            except:
+                font = font_default
+
+            # Shadow
+            draw.text((VIDEO_W//2+2, y_offset+2), display_text, fill=(0,0,0,220), anchor="mm", font=font)
+            # Main text
+            draw.text((VIDEO_W//2, y_offset), display_text, fill=(255,255,255,255), anchor="mm", font=font)
+            y_offset += size + 10
 
         # joke flash শেষ ১.৫s
+        joke = scene.get("joke", "")
         if joke and t > duration - 1.5:
             blink = int(t * 6) % 2 == 0
             jcolor = (255, 230, 50, 230) if blink else (255, 200, 0, 220)
             try:
-                jfont = ImageFont.load_default(size=28)
-            except TypeError:
-                jfont = ImageFont.load_default()
-            draw.text((VIDEO_W//2, VIDEO_H-bar_h-30),
-                      f"😂 {joke[:60]}", fill=jcolor, anchor="mm", font=jfont)
+                jfont = ImageFont.load_default(size=30)
+            except:
+                jfont = font_default
+            draw.text((VIDEO_W//2, VIDEO_H-bar_h-35), f"😂 {joke[:65]}", fill=jcolor, anchor="mm", font=jfont)
 
         return np.array(canvas)
 
@@ -218,7 +234,7 @@ def make_subtitle_clip(narration: str, joke: str, duration: float) -> VideoClip:
 def create_video(scenes: list, image_paths: list, audio_paths: list,
                  output_filename: str, music_path: str = None) -> str:
 
-    print("\n🎬 Funny Character Video তৈরি হচ্ছে...")
+    print("\n🎬 Multi-language Funny Video তৈরি হচ্ছে...")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     char_img = get_character_image()
@@ -230,7 +246,6 @@ def create_video(scenes: list, image_paths: list, audio_paths: list,
             zip(scenes, image_paths, audio_paths)):
 
         emotion = scene.get("character_emotion", "default")
-        joke    = scene.get("joke", "")
         print(f"  🎭 Scene {i+1}/{len(scenes)} — {emotion}")
 
         try:
@@ -248,7 +263,7 @@ def create_video(scenes: list, image_paths: list, audio_paths: list,
                 )
                 layers.append(char_clip)
 
-            sub = make_subtitle_clip(scene["narration"], joke, dur)
+            sub = make_subtitle_clip(scene, dur)
             layers.append(sub)
 
             comp = CompositeVideoClip(layers, size=(VIDEO_W, VIDEO_H))
@@ -257,7 +272,6 @@ def create_video(scenes: list, image_paths: list, audio_paths: list,
 
         except Exception as e:
             print(f"  ⚠️ Scene {i+1} error: {e}")
-            import traceback; traceback.print_exc()
 
     if not clips:
         raise ValueError("কোনো clip তৈরি হয়নি!")
