@@ -23,6 +23,16 @@ ELEVENLABS_VOICE_ID_HI  = "YOUR_HINDI_VOICE_ID"     # हिंदी voice
 # Backward compatibility
 ELEVENLABS_VOICE_ID = ELEVENLABS_VOICE_ID_BN
 
+# ✅ Google Cloud TTS — ElevenLabs limit শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি)
+# পাবেন: console.cloud.google.com → APIs → Text-to-Speech API enable করুন
+# তারপর: APIs & Services → Credentials → API Key
+GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
+
+# ✅ Google Cloud TTS — ElevenLabs শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি!)
+# পাবেন: console.cloud.google.com → APIs → "Cloud Text-to-Speech API" enable করুন
+# তারপর: APIs & Services → Credentials → API Key → copy করুন
+GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
+
 # ✅ Pixabay — automatic background music ডাউনলোড (সম্পূর্ণ ফ্রি)
 # পাবেন: https://pixabay.com/api/docs/ → "Get API Key" (ফ্রি signup)
 PIXABAY_API_KEY = "YOUR_PIXABAY_API_KEY"
