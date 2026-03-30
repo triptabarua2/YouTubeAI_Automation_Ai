@@ -81,7 +81,7 @@ def get_trending_topic() -> str:
     genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-2.5-flash')
     
-    current_date = datetime.date.today().strftime("%B %d, %2026")
+    current_date = datetime.date.today().strftime("%B %d, %Y")
     
     prompt = f"""Today is {current_date}. 
 Identify ONE currently viral or trending topic in Bangladesh that would be perfect for a FUNNY 2D animation video.
