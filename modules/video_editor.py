@@ -173,7 +173,7 @@ def make_character_clip(char_img: Image.Image, duration: float,
 # ── 4. Multi-language Subtitle ─────────────────────────────────────────
 
 def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
-    bar_h = 160  # Increased height for 3 languages
+    bar_h = 80  # Smaller bar — English only
 
     def make_frame(t):
         canvas = Image.new("RGBA", (VIDEO_W, VIDEO_H), (0,0,0,0))
@@ -185,31 +185,21 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
             draw.line([(0, VIDEO_H-bar_h+y), (VIDEO_W, VIDEO_H-bar_h+y)],
                       fill=(5, 5, 25, alpha))
 
-        # Languages
-        langs = [
-            ("bn", scene.get("narration", ""), 32),
-            ("hi", scene.get("translation_hindi", ""), 28),
-            ("en", scene.get("translation_english", ""), 26)
-        ]
+        # English only
+        en_text = scene.get("translation_english", "")
+        display_text = en_text[:100] + "..." if len(en_text) > 100 else en_text
 
         try:
-            font_default = ImageFont.load_default()
+            font = ImageFont.load_default(size=36)
         except:
-            font_default = None
+            font = ImageFont.load_default()
 
-        y_offset = VIDEO_H - bar_h + 30
-        for code, text, size in langs:
-            display_text = text[:85] + "..." if len(text) > 85 else text
-            try:
-                font = ImageFont.load_default(size=size)
-            except:
-                font = font_default
+        y_offset = VIDEO_H - bar_h + (bar_h // 2)
 
-            # Shadow
-            draw.text((VIDEO_W//2+2, y_offset+2), display_text, fill=(0,0,0,220), anchor="mm", font=font)
-            # Main text
-            draw.text((VIDEO_W//2, y_offset), display_text, fill=(255,255,255,255), anchor="mm", font=font)
-            y_offset += size + 10
+        # Shadow
+        draw.text((VIDEO_W//2+2, y_offset+2), display_text, fill=(0,0,0,220), anchor="mm", font=font)
+        # Main text
+        draw.text((VIDEO_W//2, y_offset), display_text, fill=(255,255,255,255), anchor="mm", font=font)
 
         # joke flash শেষ ১.৫s
         joke = scene.get("joke", "")

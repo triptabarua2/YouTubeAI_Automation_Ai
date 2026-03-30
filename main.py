@@ -114,10 +114,13 @@ def run_pipeline(topic: str = None, auto_upload: bool = False):
         notifier.notify_error("Music", e)
         music_path = None
 
-    # ── STEP 5: Voiceover ──
-    print(f"\n[5/7] 🎤 Voiceover তৈরি হচ্ছে...")
+    # ── STEP 5: Voiceover (৩ ভাষা — MrBeast style) ──
+    print(f"\n[5/7] 🎤 Voiceover তৈরি হচ্ছে (বাংলা + English + হিন্দি)...")
     try:
-        audio_paths = generate_all_voiceovers(scenes)
+        from modules.voiceover import merge_all_language_tracks
+        all_audio_paths = generate_all_voiceovers(scenes)   # dict: {bn, en, hi}
+        audio_tracks    = merge_all_language_tracks(all_audio_paths)  # merged full tracks
+        audio_paths     = all_audio_paths["bn"]              # বাংলা video editing-এ ব্যবহার হবে
         notifier.notify_voice_done()
     except Exception as e:
         notifier.notify_error("Voiceover", e)
@@ -137,9 +140,10 @@ def run_pipeline(topic: str = None, auto_upload: bool = False):
     # ── STEP 7: Upload ──
     video_url = ""
     if auto_upload:
-        print(f"\n[7/7] 📤 YouTube-এ upload হচ্ছে...")
+        print(f"\n[7/7] 📤 YouTube-এ upload হচ্ছে (video + ৩ audio track)...")
         try:
-            video_url = upload_video(video_path, thumbnail_path, script_data)
+            video_url = upload_video(video_path, thumbnail_path, script_data,
+                                     audio_tracks=audio_tracks)
             notifier.notify_uploaded(script_data.get("title", ""), video_url)
         except Exception as e:
             notifier.notify_error("YouTube Upload", e)
