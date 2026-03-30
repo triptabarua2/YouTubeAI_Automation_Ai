@@ -3,8 +3,8 @@
 # ============================================================
 
 # ✅ Telegram Bot — মোবাইলে notification (ফ্রি)
-TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-TELEGRAM_CHAT_ID   = "YOUR_TELEGRAM_CHAT_ID"
+TELEGRAM_BOT_TOKEN = "7726501373:AAGdsvnmdMnXY0UYqDwy3rDrqPRTEhnbMk4"
+TELEGRAM_CHAT_ID   = "5697098066"
 
 # ✅ Google Gemini — script লেখার জন্য (ফ্রি)
 GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"
