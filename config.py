@@ -10,12 +10,18 @@ TELEGRAM_CHAT_ID   = "YOUR_TELEGRAM_CHAT_ID"
 
 # ✅ Google Gemini (Free) — script লেখার জন্য
 # পাবেন: https://aistudio.google.com/app/apikey
-GOOGLE_API_KEY = "AIzaSyBJoG6NHpXnATaXiGEoO-XpMZ8yLHzSUqA"
+GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"
 
-# ✅ ElevenLabs — বাংলা voiceover এর জন্য
+# ✅ ElevenLabs — ৩ ভাষায় voiceover (MrBeast style)
 # পাবেন: https://elevenlabs.io (ফ্রি signup)
-ELEVENLABS_API_KEY = "YOUR_ELEVENLABS_API_KEY"
-ELEVENLABS_VOICE_ID = "YOUR_VOICE_ID"  # ElevenLabs dashboard থেকে বাংলা voice বাছুন
+# ElevenLabs dashboard → Voices → Voice ID copy করুন
+ELEVENLABS_API_KEY      = "YOUR_ELEVENLABS_API_KEY"
+ELEVENLABS_VOICE_ID_BN  = "YOUR_BENGALI_VOICE_ID"   # বাংলা voice
+ELEVENLABS_VOICE_ID_EN  = "YOUR_ENGLISH_VOICE_ID"   # English voice
+ELEVENLABS_VOICE_ID_HI  = "YOUR_HINDI_VOICE_ID"     # हिंदी voice
+
+# Backward compatibility
+ELEVENLABS_VOICE_ID = ELEVENLABS_VOICE_ID_BN
 
 # ✅ Pixabay — automatic background music ডাউনলোড (সম্পূর্ণ ফ্রি)
 # পাবেন: https://pixabay.com/api/docs/ → "Get API Key" (ফ্রি signup)
@@ -29,7 +35,7 @@ YOUTUBE_CLIENT_SECRET_FILE = "client_secret.json"
 # ============================================================
 #  Channel Settings
 # ============================================================
-CHANNEL_LANGUAGE = "bn"          # বাংলা
+CHANNEL_LANGUAGE = "bn"          # বাংলা (default audio track)
 CHANNEL_TOPIC = "2D animation educational and storytelling videos in Bengali"
 CHANNEL_STYLE = "engaging, fun, educational, suitable for Bangladeshi audience"
 VIDEO_CATEGORY_ID = "27"         # Education
