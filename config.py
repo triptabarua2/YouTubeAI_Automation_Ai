@@ -3,11 +3,13 @@
 # ============================================================
 
 # ✅ Telegram Bot — মোবাইলে notification (ফ্রি)
+import os
+
 TELEGRAM_BOT_TOKEN = "7726501373:AAGdsvnmdMnXY0UYqDwy3rDrqPRTEhnbMk4"
 TELEGRAM_CHAT_ID   = "5697098066"
 
 # ✅ Google Gemini — script লেখার জন্য (ফ্রি)
-GOOGLE_API_KEY = "AIzaSyBZy4LeJVKY_kbRBRxd1ipPXGEFtmKaFck"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # ✅ ElevenLabs — voiceover (মাসে ১০,০০০ chars ফ্রি)
 ELEVENLABS_API_KEY     = "f231e1453ae712e967e5c1e44f4a3f20a67c2ddbdd7fd130d02384f0b1bd522c"
