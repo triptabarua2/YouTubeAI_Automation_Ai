@@ -2,27 +2,31 @@
 #  config.py — সব API Key এবং ৩টি Channel Settings
 # ============================================================
 
-# ✅ Telegram Bot — মোবাইলে notification (ফ্রি)
 import os
+from dotenv import load_dotenv
 
-TELEGRAM_BOT_TOKEN = "7726501373:AAGdsvnmdMnXY0UYqDwy3rDrqPRTEhnbMk4"
-TELEGRAM_CHAT_ID   = "5697098066"
+# .env ফাইল থেকে environment variables লোড করা
+load_dotenv()
+
+# ✅ Telegram Bot — মোবাইলে notification (ফ্রি)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID")
 
 # ✅ Google Gemini — script লেখার জন্য (ফ্রি)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # ✅ ElevenLabs — voiceover (মাসে ১০,০০০ chars ফ্রি)
-ELEVENLABS_API_KEY     = "f231e1453ae712e967e5c1e44f4a3f20a67c2ddbdd7fd130d02384f0b1bd522c"
-ELEVENLABS_VOICE_ID_BN = "YOUR_BENGALI_VOICE_ID"
-ELEVENLABS_VOICE_ID_EN = "YOUR_ENGLISH_VOICE_ID"
-ELEVENLABS_VOICE_ID_HI = "DpnM70iDHNHZ0Mguv6GJ"
+ELEVENLABS_API_KEY     = os.getenv("ELEVENLABS_API_KEY")
+ELEVENLABS_VOICE_ID_BN = os.getenv("ELEVENLABS_VOICE_ID_BN", "YOUR_BENGALI_VOICE_ID")
+ELEVENLABS_VOICE_ID_EN = os.getenv("ELEVENLABS_VOICE_ID_EN", "YOUR_ENGLISH_VOICE_ID")
+ELEVENLABS_VOICE_ID_HI = os.getenv("ELEVENLABS_VOICE_ID_HI", "DpnM70iDHNHZ0Mguv6GJ")
 ELEVENLABS_VOICE_ID    = ELEVENLABS_VOICE_ID_HI  # Set Hindi as default since BN is unavailable
 
 # ✅ Google Cloud TTS — ElevenLabs শেষ হলে fallback (মাসে ১০ লাখ chars ফ্রি)
-GOOGLE_CLOUD_TTS_API_KEY = "YOUR_GOOGLE_CLOUD_TTS_API_KEY"
+GOOGLE_CLOUD_TTS_API_KEY = os.getenv("GOOGLE_CLOUD_TTS_API_KEY")
 
 # ✅ Pixabay — background music (ফ্রি)
-PIXABAY_API_KEY = "55236479-11b9f99ab068447d994840980"
+PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")
 
 # ✅ YouTube client secret — ৩টা channel-এর জন্য আলাদা file
 # console.cloud.google.com থেকে প্রতিটা channel-এর OAuth credentials ডাউনলোড করুন
@@ -78,3 +82,5 @@ SCENES_PER_VIDEO       = 8
 FPS                    = 24
 RESOLUTION             = (1920, 1080)
 VIDEO_DURATION_SECONDS = 180
+# Font Path
+FONT_PATH = os.path.join("assets", "Kalpurush.ttf")

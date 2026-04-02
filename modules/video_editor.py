@@ -189,8 +189,12 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
         en_text = scene.get("translation_english", "")
         display_text = en_text[:100] + "..." if len(en_text) > 100 else en_text
 
+        from config import FONT_PATH
         try:
-            font = ImageFont.load_default(size=36)
+            if os.path.exists(FONT_PATH):
+                font = ImageFont.truetype(FONT_PATH, size=45)
+            else:
+                font = ImageFont.load_default(size=36)
         except:
             font = ImageFont.load_default()
 
@@ -206,10 +210,14 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
         if joke and t > duration - 1.5:
             blink = int(t * 6) % 2 == 0
             jcolor = (255, 230, 50, 230) if blink else (255, 200, 0, 220)
+            from config import FONT_PATH
             try:
-                jfont = ImageFont.load_default(size=30)
+                if os.path.exists(FONT_PATH):
+                    jfont = ImageFont.truetype(FONT_PATH, size=35)
+                else:
+                    jfont = ImageFont.load_default(size=30)
             except:
-                jfont = ImageFont.load_default()  # ✅ Fixed: font_default was not defined
+                jfont = ImageFont.load_default()
             draw.text((VIDEO_W//2, VIDEO_H-bar_h-35), f"😂 {joke[:65]}", fill=jcolor, anchor="mm", font=jfont)
 
         return np.array(canvas)

@@ -5,3 +5,4 @@ __pycache__/
 *.pickle
 config.py
 client_secret.json
+.env
