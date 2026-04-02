@@ -25,7 +25,13 @@ def get_youtube_service(client_secret: str, token_file: str):
             creds.refresh(Request())
         else:
             flow  = InstalledAppFlow.from_client_secrets_file(client_secret, SCOPES)
-            creds = flow.run_local_server(port=0)
+            try:
+                # Try to run local server (works if browser is available)
+                creds = flow.run_local_server(port=0, open_browser=False)
+            except Exception:
+                # Fallback for environments without browser access
+                print("\n⚠️  Browser open failed. Please use the following link to authorize:")
+                creds = flow.run_console()
         with open(token_file, "wb") as f:
             pickle.dump(creds, f)
     return build("youtube", "v3", credentials=creds)

@@ -11,7 +11,7 @@ def generate_script(topic: str, channel_style: str = "", topic_type: str = "funn
     print(f"📝 Script তৈরি হচ্ছে: '{topic}' [{topic_type}]")
 
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     style_instructions = {
         "funny": "Use Bengali slang, jokes, puns, exaggerated humor. Tone: like a funny friend telling a story.",
@@ -72,7 +72,7 @@ Make exactly {SCENES_PER_VIDEO} scenes.
 
 def get_trending_topic(topic_type: str = "funny", topic_description: str = "") -> str:
     genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    model = genai.GenerativeModel("gemini-1.5-flash")
     date  = datetime.date.today().strftime("%B %d, %Y")
 
     prompt = f"""Today is {date}.

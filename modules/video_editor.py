@@ -1,25 +1,33 @@
 # modules/video_editor.py
 # FUNNY Animation Video — emotion-based character animations with multi-language subtitles
-#
-# Emotions:
-#   shocked       → jump up + shake
-#   laughing      → fast bounce + wobble
-#   facepalm      → lean + droop
-#   jumping       → big bounce loop
-#   confused      → head tilt
-#   proud         → puff up
-#   scared        → rapid shake
-#   crying_laugh  → bounce + tilt
-#   default       → breathing + talking pulse
 
 import os
 import math
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import moviepy
 from moviepy import (
     VideoClip, AudioFileClip, CompositeAudioClip,
     concatenate_videoclips, CompositeVideoClip
 )
+
+# MoviePy v1 vs v2 compatibility
+MOVIEPY_V2 = hasattr(VideoClip, "with_fps")
+
+def _with_fps(clip, fps):
+    return clip.with_fps(fps) if MOVIEPY_V2 else clip.set_fps(fps)
+
+def _with_audio(clip, audio):
+    return clip.with_audio(audio) if MOVIEPY_V2 else clip.set_audio(audio)
+
+def _with_mask(clip, mask):
+    return clip.with_mask(mask) if MOVIEPY_V2 else clip.set_mask(mask)
+
+def _subclipped(clip, start, end):
+    return clip.subclipped(start, end) if MOVIEPY_V2 else clip.subclip(start, end)
+
+def _with_volume_scaled(clip, factor):
+    return clip.with_volume_scaled(factor) if MOVIEPY_V2 else clip.volumex(factor)
 
 OUTPUT_DIR = "output"  # default
 ASSETS_DIR = "assets"
@@ -70,7 +78,7 @@ def make_background_clip(image_path: str, duration: float, effect: str) -> Video
         if effect == "pan_left":  left = int((1-p)*(nw-W))
         return np.array(res.crop((left, top, left+W, top+H)))
 
-    return VideoClip(frame, duration=duration).with_fps(24)
+    return _with_fps(VideoClip(frame, duration=duration), 24)
 
 
 # ── 3. Emotion Animations ─────────────────────────────────────
@@ -167,7 +175,7 @@ def make_character_clip(char_img: Image.Image, duration: float,
 
     rgb  = VideoClip(lambda t: make_frame(t)[:,:,:3], duration=duration)
     mask = VideoClip(lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
-    return rgb.with_mask(mask).with_fps(24)
+    return _with_fps(_with_mask(rgb, mask), 24)
 
 
 # ── 4. Multi-language Subtitle ─────────────────────────────────────────
@@ -224,7 +232,7 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
 
     rgb  = VideoClip(lambda t: make_frame(t)[:,:,:3], duration=duration)
     mask = VideoClip(lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
-    return rgb.with_mask(mask).with_fps(24)
+    return _with_fps(_with_mask(rgb, mask), 24)
 
 
 # ── 5. Main ───────────────────────────────────────────────────
@@ -267,7 +275,7 @@ def create_video(scenes, image_paths, audio_paths,
             layers.append(sub)
 
             comp = CompositeVideoClip(layers, size=(VIDEO_W, VIDEO_H))
-            comp = comp.with_audio(audio).with_fps(24)
+            comp = _with_fps(_with_audio(comp, audio), 24)
             clips.append(comp)
 
         except Exception as e:
@@ -282,12 +290,12 @@ def create_video(scenes, image_paths, audio_paths,
     if music_path and os.path.exists(music_path):
         try:
             from moviepy import concatenate_audioclips
-            bgm = AudioFileClip(music_path).with_volume_scaled(0.12)
+            bgm = _with_volume_scaled(AudioFileClip(music_path), 0.12)
             if bgm.duration < final.duration:
                 n   = int(final.duration / bgm.duration) + 1
                 bgm = concatenate_audioclips([bgm] * n)
-            bgm   = bgm.subclipped(0, final.duration)  # ✅ MoviePy v2 correct method
-            final = final.with_audio(CompositeAudioClip([final.audio, bgm]))
+            bgm   = _subclipped(bgm, 0, final.duration)
+            final = _with_audio(final, CompositeAudioClip([final.audio, bgm]))
         except Exception as e:
             print(f"  ⚠️ Music error: {e}")
 
