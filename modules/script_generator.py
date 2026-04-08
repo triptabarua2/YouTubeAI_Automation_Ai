@@ -1,20 +1,20 @@
 # modules/script_generator.py
-# Google Gemini দিয়ে channel-এর topic অনুযায়ী script তৈরি করে
-# ✅ Updated: google.generativeai → google.genai (নতুন package)
+# Groq API দিয়ে channel-এর topic অনুযায়ী script তৈরি করে
+# ✅ Updated: Gemini → Groq (ফ্রি + fast)
 
-from google import genai
+from groq import Groq
 import json, sys, os, datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import GOOGLE_API_KEY, SCENES_PER_VIDEO
+from config import GROQ_API_KEY, SCENES_PER_VIDEO
 
-# নতুন model name (gemini-2.0-flash)
-MODEL = "gemini-2.0-flash"
+# Model name
+MODEL = "llama-3.3-70b-versatile"
 
 
 def generate_script(topic: str, channel_style: str = "", topic_type: str = "funny") -> dict:
     print(f"📝 Script তৈরি হচ্ছে: '{topic}' [{topic_type}]")
 
-    client = genai.Client(api_key=GOOGLE_API_KEY)
+    client = Groq(api_key=GROQ_API_KEY)
 
     style_instructions = {
         "funny": "Use Bengali slang, jokes, puns, exaggerated humor. Tone: like a funny friend telling a story.",
@@ -31,7 +31,7 @@ Style Note: {style_note}
 
 For each scene provide narration in THREE languages: Bengali, Hindi, English.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON, no explanation, no markdown:
 {{
   "title": "Clickbait Bengali title with emoji",
   "description": "Bengali description (150 words) with emoji",
@@ -58,11 +58,13 @@ Make exactly {SCENES_PER_VIDEO} scenes.
 """
 
     try:
-        response = client.models.generate_content(
+        response = client.chat.completions.create(
             model=MODEL,
-            contents=prompt
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.8,
+            max_tokens=4000,
         )
-        text = response.text.strip()
+        text = response.choices[0].message.content.strip()
         if "```json" in text:
             text = text.split("```json")[1].split("```")[0].strip()
         elif "```" in text:
@@ -77,7 +79,7 @@ Make exactly {SCENES_PER_VIDEO} scenes.
 
 
 def get_trending_topic(topic_type: str = "funny", topic_description: str = "") -> str:
-    client = genai.Client(api_key=GOOGLE_API_KEY)
+    client = Groq(api_key=GROQ_API_KEY)
 
     date = datetime.date.today().strftime("%B %d, %Y")
 
@@ -85,15 +87,17 @@ def get_trending_topic(topic_type: str = "funny", topic_description: str = "") -
 Find ONE viral/trending topic in Bangladesh for a {topic_type} Bengali animation channel.
 Channel focus: {topic_description}
 
-Return ONLY the topic in Bengali with a relevant emoji. No explanation.
+Return ONLY the topic in Bengali with a relevant emoji. No explanation, no extra text.
 Example: "বিদ্যুৎ বিল দেখে মধ্যবিত্তের হার্ট অ্যাটাক 😂"
 """
     try:
-        response = client.models.generate_content(
+        response = client.chat.completions.create(
             model=MODEL,
-            contents=prompt
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.9,
+            max_tokens=100,
         )
-        topic = response.text.strip()
+        topic = response.choices[0].message.content.strip()
         print(f"💡 Trending Topic [{topic_type}]: {topic}")
         return topic
     except Exception as e:

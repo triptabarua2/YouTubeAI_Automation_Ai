@@ -14,6 +14,7 @@ TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID")
 
 # ✅ Google Gemini — script লেখার জন্য (ফ্রি)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GROQ_API_KEY  = os.getenv("GROQ_API_KEY")
 
 # ✅ ElevenLabs — voiceover (মাসে ১০,০০০ chars ফ্রি)
 ELEVENLABS_API_KEY     = os.getenv("ELEVENLABS_API_KEY")
