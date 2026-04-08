@@ -194,7 +194,7 @@ def make_character_clip(char_img: Image.Image, duration: float,
         return np.array(canvas)
 
     rgb  = VideoClip(make_frame=lambda t: make_frame(t)[:,:,:3], duration=duration)
-    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
+    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration)
     return _with_fps(_with_mask(rgb, mask), 24)
 
 
@@ -251,7 +251,7 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
         return np.array(canvas)
 
     rgb  = VideoClip(make_frame=lambda t: make_frame(t)[:,:,:3], duration=duration)
-    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
+    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration)
     return _with_fps(_with_mask(rgb, mask), 24)
 
 
