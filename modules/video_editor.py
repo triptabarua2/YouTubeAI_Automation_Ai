@@ -5,29 +5,49 @@ import os
 import math
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
-import moviepy
-from moviepy import (
-    VideoClip, AudioFileClip, CompositeAudioClip,
-    concatenate_videoclips, CompositeVideoClip
-)
 
-# MoviePy v1 vs v2 compatibility
-MOVIEPY_V2 = hasattr(VideoClip, "with_fps")
+try:
+    # Try MoviePy v2 imports
+    from moviepy.video.VideoClip import VideoClip
+    from moviepy.audio.io.AudioFileClip import AudioFileClip
+    from moviepy.audio.AudioClip import CompositeAudioClip
+    from moviepy.video.compositing.concatenate import concatenate_videoclips
+    from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
+    from moviepy.audio.compositing.concatenate import concatenate_audioclips
+except ImportError:
+    # Fallback to MoviePy v1 imports
+    try:
+        from moviepy.editor import (
+            VideoClip, AudioFileClip, CompositeAudioClip,
+            concatenate_videoclips, CompositeVideoClip, concatenate_audioclips
+        )
+    except ImportError:
+        raise ImportError("MoviePy is not installed correctly. Please install it using 'pip install moviepy'.")
+
+# MoviePy v1 vs v2 compatibility helpers
+def _has_method(obj, method_name):
+    return hasattr(obj, method_name)
 
 def _with_fps(clip, fps):
-    return clip.with_fps(fps) if MOVIEPY_V2 else clip.set_fps(fps)
+    if _has_method(clip, "with_fps"): return clip.with_fps(fps)
+    return clip.set_fps(fps)
 
 def _with_audio(clip, audio):
-    return clip.with_audio(audio) if MOVIEPY_V2 else clip.set_audio(audio)
+    if _has_method(clip, "with_audio"): return clip.with_audio(audio)
+    return clip.set_audio(audio)
 
 def _with_mask(clip, mask):
-    return clip.with_mask(mask) if MOVIEPY_V2 else clip.set_mask(mask)
+    if _has_method(clip, "with_mask"): return clip.with_mask(mask)
+    return clip.set_mask(mask)
 
 def _subclipped(clip, start, end):
-    return clip.subclipped(start, end) if MOVIEPY_V2 else clip.subclip(start, end)
+    if _has_method(clip, "subclipped"): return clip.subclipped(start, end)
+    return clip.subclip(start, end)
 
 def _with_volume_scaled(clip, factor):
-    return clip.with_volume_scaled(factor) if MOVIEPY_V2 else clip.volumex(factor)
+    if _has_method(clip, "with_volume_scaled"): return clip.with_volume_scaled(factor)
+    if _has_method(clip, "volumex"): return clip.volumex(factor)
+    return clip
 
 OUTPUT_DIR = "output"  # default
 ASSETS_DIR = "assets"
@@ -78,7 +98,7 @@ def make_background_clip(image_path: str, duration: float, effect: str) -> Video
         if effect == "pan_left":  left = int((1-p)*(nw-W))
         return np.array(res.crop((left, top, left+W, top+H)))
 
-    return _with_fps(VideoClip(frame, duration=duration), 24)
+    return _with_fps(VideoClip(make_frame=frame, duration=duration), 24)
 
 
 # ── 3. Emotion Animations ─────────────────────────────────────
@@ -173,8 +193,8 @@ def make_character_clip(char_img: Image.Image, duration: float,
         canvas.paste(ch, (cx, cy), ch)
         return np.array(canvas)
 
-    rgb  = VideoClip(lambda t: make_frame(t)[:,:,:3], duration=duration)
-    mask = VideoClip(lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
+    rgb  = VideoClip(make_frame=lambda t: make_frame(t)[:,:,:3], duration=duration)
+    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
     return _with_fps(_with_mask(rgb, mask), 24)
 
 
@@ -230,8 +250,8 @@ def make_subtitle_clip(scene: dict, duration: float) -> VideoClip:
 
         return np.array(canvas)
 
-    rgb  = VideoClip(lambda t: make_frame(t)[:,:,:3], duration=duration)
-    mask = VideoClip(lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
+    rgb  = VideoClip(make_frame=lambda t: make_frame(t)[:,:,:3], duration=duration)
+    mask = VideoClip(make_frame=lambda t: make_frame(t)[:,:,3]/255.0, duration=duration, is_mask=True)
     return _with_fps(_with_mask(rgb, mask), 24)
 
 
@@ -289,7 +309,6 @@ def create_video(scenes, image_paths, audio_paths,
 
     if music_path and os.path.exists(music_path):
         try:
-            from moviepy import concatenate_audioclips
             bgm = _with_volume_scaled(AudioFileClip(music_path), 0.12)
             if bgm.duration < final.duration:
                 n   = int(final.duration / bgm.duration) + 1
